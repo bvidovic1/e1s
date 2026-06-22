@@ -20,6 +20,7 @@ func newClusterView(clusters []types.Cluster, app *App) *clusterView {
 	keys := append(basicKeyInputs, []keyDescriptionPair{
 		hotKeyMap["n"],
 		hotKeyMap["N"],
+		hotKeyMap["M"],
 	}...)
 	return &clusterView{
 		view: *newView(app, keys, secondaryPageKeyMap{
