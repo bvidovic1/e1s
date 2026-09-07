@@ -501,4 +501,4 @@ Xing Yahao(https://github.com/keidarcy)
 
 ## Stargazers over time
 
-[![Stargazers over time](https://starchart.cc/keidarcy/e1s.svg?variant=adaptive)](https://starchart.cc/keidarcy/e1s)
+[![Star History Chart](https://api.star-history.com/svg?repos=keidarcy/e1s&type=Date)](https://star-history.com/#keidarcy/e1s&Date)
