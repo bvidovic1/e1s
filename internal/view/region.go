@@ -65,7 +65,11 @@ func (v *regionView) headerPageItems(index int) (items []headerItem) {
 
 // Generate table params
 func (v *regionView) tableParamsBuilder() (title string, headers []string, rowsBuilder func() [][]string) {
-	title = fmt.Sprintf(color.TableTitleFmt, v.app.kind, "all", len(v.regions))
+	scope := "all"
+	if v.app.regionWithoutClusters != "" {
+		scope = "no ECS clusters in " + v.app.regionWithoutClusters + ", choose another "
+	}
+	title = fmt.Sprintf(color.TableTitleFmt, v.app.kind, scope, len(v.regions))
 	headers = []string{
 		"Code",
 		"Name",

@@ -174,6 +174,15 @@ func (v *view) handleSelected(row, column int) {
 				v.revertProfileOrRegion("regions", prevRegion)
 				return
 			}
+			// The region holds no ECS clusters and the regions page was shown
+			// again. Nothing was switched to, so keep the session on the region
+			// that has pages, otherwise going back lands on a page that does
+			// not exist.
+			if v.app.regionWithoutClusters == globalRegion {
+				globalRegion = prevRegion
+				v.app.Store.SwitchAwsConfig(globalProfile, globalRegion)
+				return
+			}
 			v.app.Notice.Info(fmt.Sprintf("Switched to Profile: %s, Region: %s", globalProfile, globalRegion))
 		}
 
