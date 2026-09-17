@@ -110,6 +110,8 @@ type App struct {
 	isSuspended bool
 	// True while the filter input is open; auto refresh should not replace it.
 	filterInputActive bool
+	// Region the user was sent back from because it holds no ECS clusters
+	regionWithoutClusters string
 	// Show selected status tasks
 	taskStatus types.DesiredStatus
 	// Show resources from cluster
@@ -177,6 +179,11 @@ func (app *App) viewStateKey() string {
 }
 
 func (app *App) canAutoRefresh() bool {
+	// the profile and the region page have no primary kind page to reload, a
+	// refresh would fall through to clusters and close the page being used
+	if app.kind == ProfileKind || app.kind == RegionKind {
+		return false
+	}
 	return app.secondaryKind == EmptyKind && !app.isSuspended && !app.filterInputActive
 }
 
@@ -421,6 +428,18 @@ func (app *App) onClose() {
 **************** Exited e1s ************************************`)
 }
 
+// The profile and the region page are their own previous kind, so leaving one
+// without choosing needs the kind the switcher was opened from.
+func (app *App) rememberKindBeforeSwitcher() {
+	// a fresh look at the list, any earlier empty region is no longer the point
+	app.regionWithoutClusters = ""
+
+	if app.kind == ProfileKind || app.kind == RegionKind {
+		return
+	}
+	app.backKind = app.kind
+}
+
 func (app *App) globalInputHandle(event *tcell.EventKey) *tcell.EventKey {
 	if app.Store == nil {
 		switch event.Key() {
@@ -439,11 +458,16 @@ func (app *App) globalInputHandle(event *tcell.EventKey) *tcell.EventKey {
 	// Handle Ctrl+P for profile switcher
 	switch event.Key() {
 	case tcell.KeyCtrlP:
+		app.rememberKindBeforeSwitcher()
 		app.kind = ProfileKind
 		app.showProfilesPage(false)
+		// the page is shown, passing the key on lets the focused view reload it
+		return nil
 	case tcell.KeyCtrlR:
+		app.rememberKindBeforeSwitcher()
 		app.kind = RegionKind
 		app.showRegionsPage(false)
+		return nil
 	}
 
 	return event
